@@ -1,1 +1,125 @@
-hoola
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Data Display</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilo del contenedor */
+        #jsonDataDisplay {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            background-color: #d4f7d3; /* Fondo verde claro */
+            transition: background-color 0.5s ease; /* Agrega transición para cambiar el color de fondo */
+            min-height: 100vh; /* Ajusta el mínimo de altura para cubrir toda la pantalla */
+        }
+
+        /* Estilo de la tarjeta */
+        .card {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 1.5vw; /* Utiliza unidades vw para el padding */
+            margin: 1.5vw;
+            text-align: center;
+            max-width: 30vw; /* Utiliza unidades vw para el ancho máximo */
+            font-size: 1.2vw; /* Utiliza unidades vw para el tamaño de fuente */
+            color: #000; /* Color del texto por defecto (negro) */
+        }
+
+        /* Estilo para la imagen dentro de la tarjeta */
+        .card img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Estilo para el título centrado */
+        h1 {
+            text-align: center;
+            margin-top: 20px; /* Añade un margen superior para separar el título del borde superior */
+        }
+
+        /* Estilo para el botón de cambio de color */
+        #changeColorBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: #349e4a; /* Verde oscuro */
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Estilo para el texto de las tarjetas con fondo oscuro */
+        .darkText .card {
+            color: #fff; /* Cambia el color del texto a blanco */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Polen</h1>
+
+<div id="jsonDataDisplay"></div>
+<button id="changeColorBtn" onclick="changeColor()">Cambiar Color</button>
+
+<script>
+    // URL to fetch JSON data
+    var jsonDataURL = "https://www.zaragoza.es/sede/servicio/informacion-polen.json";
+    // Accessing and displaying data
+    var jsonDataDisplay = document.getElementById("jsonDataDisplay");
+
+    // Fetch JSON data from the provided URL
+    fetch(jsonDataURL)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.result) {
+                data.result.forEach(function(item) {
+                    var div = document.createElement("div");
+                    div.classList.add("card");
+
+                    var title = document.createElement("h2");
+                    title.textContent = item.title;
+                    div.appendChild(title);
+
+                    var image = document.createElement("img");
+                    image.src = item.image;
+                    div.appendChild(image);
+
+                    var observation = document.createElement("p");
+                    observation.textContent = "Observation: " + item.observation[0].value;
+                    div.appendChild(observation);
+
+                    jsonDataDisplay.appendChild(div);
+                });
+            } else {
+                console.error("Invalid JSON data structure.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching JSON data:", error);
+        });
+
+    // Función para cambiar el color de fondo y del texto
+    function changeColor() {
+        var currentColor = window.getComputedStyle(jsonDataDisplay).getPropertyValue('background-color');
+        var newColor = (currentColor === 'rgb(212, 247, 211)') ? '#255821' : '#d4f7d3'; /* Cambia entre verde claro y oscuro */
+        jsonDataDisplay.style.backgroundColor = newColor;
+
+        // Cambia la clase para ajustar el color del texto
+        if (newColor === '#d4f7d3') {
+            jsonDataDisplay.classList.remove('darkText');
+        } else {
+            jsonDataDisplay.classList.add('darkText');
+        }
+    }
+</script>
+
+</body>
+</html>
